@@ -28,3 +28,7 @@ cloudstream {
     tvTypes = ["Live"]
     iconUrl = "https://www.google.com/s2/favicons?domain=github.com&sz=128"
 }
+
+dependencies {
+    implementation "com.github.recloudstream:cloudstream:master-SNAPSHOT"
+}
