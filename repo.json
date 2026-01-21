@@ -1,0 +1,8 @@
+{
+    "name": "HarekatJK Repo",
+    "description": "HarekatJK IPTV Kanalları",
+    "manifestVersion": 1,
+    "pluginLists": [
+        "https://raw.githubusercontent.com/miracxzx/harekatjk-cloudstream/builds/plugins.json"
+    ]
+}
