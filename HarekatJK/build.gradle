@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'com.lagradost.cloudstream3.gradle'
 
 android {
+    namespace "com.harekatjk"
     compileSdkVersion 33
     
     defaultConfig {
@@ -27,4 +28,10 @@ cloudstream {
     status = 1
     tvTypes = ["Live"]
     iconUrl = "https://www.google.com/s2/favicons?domain=github.com&sz=128"
+}
+
+dependencies {
+    // The cloudstream gradle plugin should automatically add the required dependencies
+    // through the 'apk' configuration
+    apk "com.lagradost:cloudstream3:pre-release"
 }
