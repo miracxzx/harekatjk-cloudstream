@@ -30,5 +30,5 @@ cloudstream {
 }
 
 dependencies {
-    implementation "com.github.recloudstream:cloudstream:master-SNAPSHOT"
+    compileOnly "com.github.recloudstream:cloudstream3:pre-release"
 }
