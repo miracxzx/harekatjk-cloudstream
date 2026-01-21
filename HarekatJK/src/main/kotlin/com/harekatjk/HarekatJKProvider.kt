@@ -3,6 +3,7 @@ package com.harekatjk
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.Qualities
+import java.net.URL
 
 class HarekatJKProvider : MainAPI() {
     override var name = "HarekatJK"
@@ -29,21 +30,19 @@ class HarekatJKProvider : MainAPI() {
         while (i < lines.size) {
             val line = lines[i].trim()
             if (line.startsWith("#EXTINF:")) {
-                // Parse EXTINF line
                 val nameMatch = Regex("tvg-name=\"([^\"]+)\"").find(line)
                 val logoMatch = Regex("tvg-logo=\"([^\"]+)\"").find(line)
                 val groupMatch = Regex("group-title=\"([^\"]+)\"").find(line)
                 val displayName = line.substringAfterLast(",").trim()
                 
-                val name = nameMatch?.groupValues?.get(1) ?: displayName
+                val entryName = nameMatch?.groupValues?.get(1) ?: displayName
                 val logo = logoMatch?.groupValues?.get(1)
                 val group = groupMatch?.groupValues?.get(1)
                 
-                // Next line should be the URL
                 if (i + 1 < lines.size) {
                     val urlLine = lines[i + 1].trim()
                     if (urlLine.isNotEmpty() && !urlLine.startsWith("#")) {
-                        entries.add(M3UEntry(name, urlLine, logo, group))
+                        entries.add(M3UEntry(entryName, urlLine, logo, group))
                         i++
                     }
                 }
@@ -53,13 +52,17 @@ class HarekatJKProvider : MainAPI() {
         return entries
     }
 
-    private suspend fun fetchM3U(): String {
-        return app.get(m3uUrl).text
+    private suspend fun fetchM3UContent(): String {
+        return try {
+            URL(m3uUrl).readText()
+        } catch (e: Exception) {
+            ""
+        }
     }
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val response = fetchM3U()
-        val playlist = parseM3U(response)
+        val content = fetchM3UContent()
+        val playlist = parseM3U(content)
         
         val groups = playlist.groupBy { it.group ?: "Genel" }.map { (groupName, list) ->
             HomePageList(
@@ -76,8 +79,8 @@ class HarekatJKProvider : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val response = fetchM3U()
-        val playlist = parseM3U(response)
+        val content = fetchM3UContent()
+        val playlist = parseM3U(content)
         
         return playlist.filter { it.name.contains(query, ignoreCase = true) }.map { item ->
             newLiveSearchResponse(item.name, item.url) {
@@ -87,8 +90,8 @@ class HarekatJKProvider : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse {
-        val response = fetchM3U()
-        val playlist = parseM3U(response)
+        val content = fetchM3UContent()
+        val playlist = parseM3U(content)
         val item = playlist.find { it.url == url } ?: throw ErrorLoadingException("Kanal bulunamadı")
 
         return newLiveStreamLoadResponse(item.name, url, url) {
