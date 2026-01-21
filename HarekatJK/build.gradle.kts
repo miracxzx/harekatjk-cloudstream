@@ -1,32 +1,34 @@
-import com.lagradost.cloudstream3.gradle.CloudstreamExtension
-import org.gradle.api.Project
-import org.gradle.kotlin.dsl.configure
+version = 1
 
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-        maven("https://jitpack.io")
-    }
-    dependencies {
-        classpath("com.github.recloudstream:gradle:master-SNAPSHOT")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.20")
-    }
+cloudstream {
+    language = "tr"
+    description = "HarekatJK Canlı TV Yayınları"
+    authors = listOf("mirac")
+    
+    status = 1 // 0: Down, 1: Ok, 2: Slow, 3: Beta only
+    tvTypes = listOf("Live")
+    
+    iconUrl = "https://www.google.com/s2/favicons?domain=github.com&sz=128"
 }
 
-apply(plugin = "com.android.library")
-apply(plugin = "kotlin-android")
-apply(plugin = "com.github.recloudstream")
-
-configure<CloudstreamExtension> {
-    name = "HarekatJK"
-    description = "HarekatJK Canlı Yayınları"
-    authors = listOf("mirac")
-    version = 1
-    setOf(TvType.Live)
+android {
+    compileSdk = 33
+    
+    defaultConfig {
+        minSdk = 21
+        targetSdk = 33
+    }
+    
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
-    val cloudstreamVersion = "master-SNAPSHOT"
-    implementation("com.github.recloudstream:cloudstream:$cloudstreamVersion")
+    implementation("com.github.recloudstream:cloudstream:master-SNAPSHOT")
 }
