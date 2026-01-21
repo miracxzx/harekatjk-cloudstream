@@ -105,6 +105,7 @@ class HarekatJKProvider : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
+        @Suppress("DEPRECATION")
         callback.invoke(
             ExtractorLink(
                 source = this.name,
