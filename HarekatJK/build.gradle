@@ -1,0 +1,30 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'com.lagradost.cloudstream3.gradle'
+
+android {
+    compileSdkVersion 33
+    
+    defaultConfig {
+        minSdk 21
+        targetSdk 33
+    }
+    
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+cloudstream {
+    language = "tr"
+    description = "HarekatJK Canlı TV Yayınları"
+    authors = ["mirac"]
+    status = 1
+    tvTypes = ["Live"]
+    iconUrl = "https://www.google.com/s2/favicons?domain=github.com&sz=128"
+}
