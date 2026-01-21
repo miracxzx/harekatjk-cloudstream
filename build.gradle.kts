@@ -19,10 +19,6 @@ allprojects {
     }
 }
 
-plugins {
-    id("com.github.recloudstream.gradle") version "master-SNAPSHOT" apply false
-}
-
 task<Delete>("clean") {
     delete(rootProject.buildDir)
 }
