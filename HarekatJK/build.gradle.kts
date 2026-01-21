@@ -1,4 +1,8 @@
-// Don't make this version, or name, we handle these in the cloudstream block
+// Apply the required plugins
+apply(plugin = "com.android.library")
+apply(plugin = "kotlin-android")
+apply(plugin = "com.lagradost.cloudstream3.gradle")
+
 version = 1
 
 cloudstream {
