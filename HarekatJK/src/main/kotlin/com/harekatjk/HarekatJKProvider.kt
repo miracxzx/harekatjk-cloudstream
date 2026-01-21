@@ -3,7 +3,6 @@ package com.harekatjk
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.Qualities
-import com.lagradost.cloudstream3.utils.newExtractorLink
 
 class HarekatJKProvider : MainAPI() {
     override var name = "HarekatJK"
@@ -54,8 +53,12 @@ class HarekatJKProvider : MainAPI() {
         return entries
     }
 
+    private suspend fun fetchM3U(): String {
+        return app.get(m3uUrl).text
+    }
+
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val response = app.get(m3uUrl).text
+        val response = fetchM3U()
         val playlist = parseM3U(response)
         
         val groups = playlist.groupBy { it.group ?: "Genel" }.map { (groupName, list) ->
@@ -64,7 +67,6 @@ class HarekatJKProvider : MainAPI() {
                 list.map { item ->
                     newLiveSearchResponse(item.name, item.url) {
                         this.posterUrl = item.logo
-                        this.lang = "tr"
                     }
                 }
             )
@@ -74,19 +76,18 @@ class HarekatJKProvider : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val response = app.get(m3uUrl).text
+        val response = fetchM3U()
         val playlist = parseM3U(response)
         
         return playlist.filter { it.name.contains(query, ignoreCase = true) }.map { item ->
             newLiveSearchResponse(item.name, item.url) {
                 this.posterUrl = item.logo
-                this.lang = "tr"
             }
         }
     }
 
     override suspend fun load(url: String): LoadResponse {
-        val response = app.get(m3uUrl).text
+        val response = fetchM3U()
         val playlist = parseM3U(response)
         val item = playlist.find { it.url == url } ?: throw ErrorLoadingException("Kanal bulunamadı")
 
@@ -102,16 +103,15 @@ class HarekatJKProvider : MainAPI() {
         callback: (ExtractorLink) -> Unit
     ): Boolean {
         callback.invoke(
-            newExtractorLink(
+            ExtractorLink(
                 source = this.name,
                 name = this.name,
                 url = data,
-                referer = "https://monotv529.com/"
-            ) {
-                this.quality = Qualities.Unknown.value
-                this.isM3u8 = true
-                this.headers = mapOf("User-Agent" to "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5)")
-            }
+                referer = "https://monotv529.com/",
+                quality = Qualities.Unknown.value,
+                isM3u8 = true,
+                headers = mapOf("User-Agent" to "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5)")
+            )
         )
         return true
     }
